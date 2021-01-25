@@ -85,8 +85,7 @@ namespace AdvanceQuestions
                 wordsUsed.Add(curr.Word);
 
             }
-            var tpl = SpaceCount(curr.Left, width);
-            if(tpl.length < width)
+
         }
 
         static void Main(string[] args)
