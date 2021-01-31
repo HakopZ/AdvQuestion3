@@ -65,25 +65,61 @@ namespace AdvanceQuestions
 
         static string JustifyText(Rope text, int width)
         {
-            
-        }
-        static int TraverseTree(Node root, int width)
-        {
-            Node startingNode = root;
-            while (startingNode.Left != null)
-            {
-                startingNode = startingNode.Left;
-            }
-            
 
+            StringBuilder stringBuilder = new StringBuilder();
+            int length = 0;
+            int spaces = 0;
+            SpaceCount(text.Root, ref length, ref spaces, new List<string>(), stringBuilder, width);
+            return stringBuilder.ToString();
         }
-        static int SpaceCount(Node curr, int length, ref int space, List<string> wordsUsed, int width)
+        
+        static void SpaceCount(Node curr, ref int length, ref int spaces, List<string> wordsUsed, StringBuilder sb, int width)
         {
-            if(curr.Word != "")
+            if (curr.Word != "")
             {
+                if (length + curr.Word.Length > width)
+                {
+                    StringBuilder temp = new StringBuilder();
+                    spaces += (width - length);
+                    for (int i = 0; i < wordsUsed.Count; i++)
+                    {
+                        temp.Append(wordsUsed[i]);
+                        if (temp.Length >= width || wordsUsed.Count == 1)
+                        {
+                            temp.Append("\n");
+                            sb.Append(temp);
+                            spaces = 0;
+                            length = 0;
+                            wordsUsed.Clear();
+                            break;
+                        }
+                        int x = (int)Math.Ceiling((double)spaces / (wordsUsed.Count - i - 1));
+                        temp.Append(' ', x);
+                        spaces -= x;
+                    }
+                }   
                 curr.Visited = true;
+                
                 wordsUsed.Add(curr.Word);
-
+                length += curr.Word.Length;
+                if (length < width)
+                {
+                    spaces++;
+                    length++;
+                }
+                return;
+            }
+            else if (curr.Word == "") //Might clean up
+            {
+                if (!curr.Left.Visited)
+                {
+                    SpaceCount(curr.Left, ref length, ref spaces, wordsUsed, sb, width);
+                }
+                if (!curr.Right.Visited)
+                {
+                    SpaceCount(curr.Right, ref length, ref spaces, wordsUsed, sb, width);
+                }
+                curr.Visited = true;
             }
 
         }
@@ -97,10 +133,9 @@ namespace AdvanceQuestions
             int l = int.Parse(Console.ReadLine());
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            string x = JustifyText(words, l);
+            string x = JustifyText(rope, l);
             stopwatch.Stop();
             Console.WriteLine(x);
-            Console.WriteLine($"Length of string: {words.Length} Operations: {CountOperations} : {CountOperations / words.Length}");
             Console.WriteLine(stopwatch.Elapsed);
             Console.ReadKey();
         }

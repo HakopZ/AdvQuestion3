@@ -16,6 +16,10 @@ namespace AdvanceQuestions
                 {
                     return Word.Length;
                 }
+                if (Left.Word != "")
+                {
+                    return Left.Word.Length;
+                }
                 int x = 0;
                 x += Left != null ? Left.Weight : 0;
                 x += Right != null ? Right.Weight : 0;
@@ -55,7 +59,7 @@ namespace AdvanceQuestions
     }
     class Rope
     {
-        Node Root;
+        public Node Root;
         int Count { get; set; }
         string FullWord = "";
         public Rope(List<string> words)
@@ -70,6 +74,8 @@ namespace AdvanceQuestions
                 curr = new Node();
                 curr.Left = BuildTree(words.Take(words.Count / 2).ToList(), curr.Left);
                 curr.Right = BuildTree(words.Skip(words.Count / 2).ToList(), curr.Right);
+                curr.Left.Parent = curr;
+                curr.Right.Parent = curr;
             }
             else
             {
@@ -85,10 +91,7 @@ namespace AdvanceQuestions
             temp = Concatenate(temp, newRope);
             Root =  Concatenate(Root, temp);
         }
-        /*public Node Balance(Node curr)
-        {
-                
-        }*/
+        
         public Node Concatenate(Node S1, Node S2)
         {
             if (S1.Weight == 0) return S2;
