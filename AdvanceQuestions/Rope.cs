@@ -43,7 +43,6 @@ namespace AdvanceQuestions
         }
 
 
-        public bool Visited { get; set; }
         public string Word { get; set; }
         public Node Left { get; set; }
         public Node Right { get; set; }
@@ -51,7 +50,6 @@ namespace AdvanceQuestions
         public Node Parent { get; set; } //Remove if not used
         public Node(string word = "")
         {
-            Visited = false;
             Word = word;
         }
 
@@ -60,8 +58,8 @@ namespace AdvanceQuestions
     class Rope
     {
         public Node Root;
-        int Count { get; set; }
-        string FullWord = "";
+        public int Count { get; private set; }
+        
         public Rope(List<string> words)
         {
             Count = words.Count;
@@ -117,7 +115,6 @@ namespace AdvanceQuestions
 
         }
 
-        //Test
         public (Node, char) IndexOf(Node current, int i)
         {
             if (current.Weight <= i && current.Right != null)
@@ -163,6 +160,57 @@ namespace AdvanceQuestions
                 f1 = Concatenate(f1, f2);
             }
             return f1; 
+        }
+        public string JustifyText(int width)
+        {
+
+            StringBuilder stringBuilder = new StringBuilder();
+            int length = 0;
+            int spaces = 0;
+            GoThroughTree(Root, ref length, ref spaces, new List<string>(), stringBuilder, width);
+            return stringBuilder.ToString();
+        }
+
+        public void GoThroughTree(Node curr, ref int length, ref int spaces, List<string> wordsUsed, StringBuilder sb, int width)
+        {
+            if (curr.Word != "")
+            {
+                if (length + curr.Word.Length > width)
+                {
+                    StringBuilder temp = new StringBuilder();
+                    spaces += (width - length);
+                    for (int i = 0; i < wordsUsed.Count; i++)
+                    {
+                        temp.Append(wordsUsed[i]);
+                        if (temp.Length >= width || wordsUsed.Count == 1)
+                        {
+                            temp.Append("\n");
+                            sb.Append(temp);
+                            spaces = 0;
+                            length = 0;
+                            wordsUsed.Clear();
+                            break;
+                        }
+                        int x = (int)Math.Ceiling((double)spaces / (wordsUsed.Count - i - 1));
+                        temp.Append(' ', x);
+                        spaces -= x;
+                    }
+                }
+                wordsUsed.Add(curr.Word);
+                length += curr.Word.Length;
+                if (length < width)
+                {
+                    spaces++;
+                    length++;
+                }
+                return;
+            }
+            else if (curr.Word == "")
+            {
+                SpaceCount(curr.Left, ref length, ref spaces, wordsUsed, sb, width);
+                SpaceCount(curr.Right, ref length, ref spaces, wordsUsed, sb, width);
+            }
+
         }
     }
 }
